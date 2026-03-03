@@ -446,8 +446,8 @@
         personnelData = JSON.parse(JSON.stringify(DEFAULT_PERSONNEL));
 
         // Reset editable fields
-        $('[data-field="companyName"]').textContent = 'PlusX';
-        $('[data-field="companySubtitle"]').textContent = 'Creative Partner';
+        $('[data-field="companyName"]').textContent = '디렉터마켓';
+        $('[data-field="companySubtitle"]').textContent = '';
         $('[data-field="projectName"]').textContent = '프로젝트명';
         $('[data-field="projectPeriod"]').textContent = '0개월 (0월-0월)';
         $('[data-field="createdDate"]').textContent = '2023. 01. 01.';

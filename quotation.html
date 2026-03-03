@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QUOTATION</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap"
+        rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #F5F5F0;
+            --white: #FFFFFF;
+            --text: #1A1A1A;
+            --sub: #555555;
+            --dim: #999999;
+            --border: #E0E0E0;
+            --accent: #1B2A4A;
+            --accent-light: #E8ECF4;
+            --blue: #2563EB;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Noto Sans KR', -apple-system, sans-serif;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ===== TOOLBAR ===== */
+        .toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 32px;
+            font-size: 13px;
+        }
+
+        .toolbar-left {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .toolbar-title {
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .toolbar-hint {
+            font-size: 11px;
+            color: var(--dim);
+            background: var(--accent-light);
+            padding: 3px 12px;
+            border-radius: 4px;
+        }
+
+        .toolbar-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn {
+            padding: 7px 18px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            transition: all 0.15s;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #0F1D38;
+        }
+
+        .btn-outline {
+            background: #fff;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-outline:hover {
+            background: #f5f5f5;
+        }
+
+        /* ===== PAGE ===== */
+        .page {
+            max-width: 860px;
+            margin: 80px auto 60px;
+            background: var(--white);
+            box-shadow: 0 1px 8px rgba(0, 0, 0, 0.06);
+            padding: 64px 72px 60px;
+            border-radius: 2px;
+        }
+
+        /* ===== EDITABLE ===== */
+        [contenteditable] {
+            outline: none;
+            transition: background 0.15s;
+            border-radius: 2px;
+        }
+
+        [contenteditable]:hover {
+            background: rgba(37, 99, 235, 0.04);
+        }
+
+        [contenteditable]:focus {
+            background: rgba(37, 99, 235, 0.06);
+        }
+
+        /* ===== HEADER ===== */
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 48px;
+            padding-bottom: 32px;
+            border-bottom: 2px solid var(--text);
+        }
+
+        .q-company h1 {
+            font-size: 22px;
+            font-weight: 900;
+            letter-spacing: -0.3px;
+        }
+
+        .q-company .tagline {
+            font-size: 11px;
+            color: var(--dim);
+            letter-spacing: 3px;
+            margin-top: 2px;
+        }
+
+        .q-title {
+            text-align: right;
+        }
+
+        .q-title h2 {
+            font-size: 32px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: var(--accent);
+        }
+
+        .q-title .q-date {
+            font-size: 12px;
+            color: var(--dim);
+            margin-top: 6px;
+        }
+
+        /* ===== INFO GRID ===== */
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 40px;
+        }
+
+        .info-block {}
+
+        .info-block-title {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            color: var(--dim);
+            margin-bottom: 12px;
+            text-transform: uppercase;
+        }
+
+        .info-row {
+            display: flex;
+            padding: 6px 0;
+            font-size: 13px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-k {
+            width: 90px;
+            color: var(--dim);
+            flex-shrink: 0;
+        }
+
+        .info-v {
+            font-weight: 500;
+        }
+
+        /* ===== TOTAL BOX ===== */
+        .total-box {
+            background: var(--accent);
+            color: #fff;
+            padding: 28px 36px;
+            border-radius: 4px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .total-box .t-label {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 4px;
+        }
+
+        .total-box .t-amount {
+            font-size: 34px;
+            font-weight: 900;
+            letter-spacing: -0.5px;
+        }
+
+        .total-box .t-note {
+            font-size: 11px;
+            opacity: 0.5;
+            margin-top: 4px;
+        }
+
+        .total-box .t-badge {
+            background: rgba(255, 255, 255, 0.12);
+            padding: 6px 18px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* ===== SECTION ===== */
+        .sec-label {
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 14px;
+        }
+
+        /* ===== TABLE ===== */
+        .tbl-wrap {
+            margin-bottom: 32px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background: #FAFAF8;
+            padding: 10px 14px;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            color: var(--dim);
+            text-transform: uppercase;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        thead th.r {
+            text-align: right;
+        }
+
+        tbody td {
+            padding: 12px 14px;
+            font-size: 13px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:hover {
+            background: #FAFAF8;
+        }
+
+        td.r {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+
+        td.bold {
+            font-weight: 700;
+        }
+
+        td.calc {
+            color: var(--blue);
+            font-weight: 700;
+        }
+
+        .grade-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .g-top {
+            background: #FEF3C7;
+            color: #92400E;
+        }
+
+        .g-high {
+            background: #DBEAFE;
+            color: #1E40AF;
+        }
+
+        .g-mid {
+            background: #D1FAE5;
+            color: #065F46;
+        }
+
+        .g-low {
+            background: #F3F4F6;
+            color: #374151;
+        }
+
+        select.sel {
+            background: #fff;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 3px 6px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-family: inherit;
+            cursor: pointer;
+            outline: none;
+        }
+
+        select.sel:focus {
+            border-color: var(--blue);
+        }
+
+        .num-input {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            font-size: 13px;
+            font-weight: 600;
+            text-align: right;
+            width: 100%;
+            outline: none;
+            font-family: inherit;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .num-input:focus {
+            color: var(--blue);
+        }
+
+        tfoot td {
+            background: #FAFAF8;
+            font-weight: 700;
+            border-top: 2px solid var(--border);
+            padding: 12px 14px;
+            font-size: 13px;
+        }
+
+        .row-del {
+            background: none;
+            border: none;
+            color: #ccc;
+            cursor: pointer;
+            font-size: 14px;
+            transition: color 0.15s;
+        }
+
+        .row-del:hover {
+            color: #EF4444;
+        }
+
+        .btn-add-row {
+            width: 100%;
+            padding: 8px;
+            background: #fff;
+            border: 1px dashed var(--border);
+            border-radius: 4px;
+            font-size: 12px;
+            color: var(--dim);
+            cursor: pointer;
+            font-family: inherit;
+            margin-bottom: 36px;
+            transition: all 0.15s;
+        }
+
+        .btn-add-row:hover {
+            border-color: var(--blue);
+            color: var(--blue);
+            background: rgba(37, 99, 235, 0.02);
+        }
+
+        /* ===== TASK ===== */
+        .task-box {
+            background: #FAFAF8;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 20px 24px;
+            margin-bottom: 36px;
+        }
+
+        .task-label {
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            color: var(--accent);
+            margin-bottom: 10px;
+        }
+
+        .task-content {
+            font-size: 13px;
+            color: var(--sub);
+            line-height: 1.8;
+        }
+
+        /* ===== COST CARDS ===== */
+        .cost-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 36px;
+        }
+
+        .cost-item {
+            background: #FAFAF8;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            padding: 20px;
+        }
+
+        .cost-item .c-label {
+            font-size: 11px;
+            color: var(--dim);
+            margin-bottom: 2px;
+        }
+
+        .cost-item .c-formula {
+            font-size: 10px;
+            color: var(--dim);
+            margin-bottom: 10px;
+            font-family: monospace;
+        }
+
+        .cost-item .c-val {
+            font-size: 20px;
+            font-weight: 900;
+            color: var(--text);
+        }
+
+        .rate-input {
+            background: #fff;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-family: monospace;
+            width: 40px;
+            text-align: center;
+            outline: none;
+        }
+
+        .rate-input:focus {
+            border-color: var(--blue);
+        }
+
+        /* ===== SUMMARY ===== */
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 36px;
+        }
+
+        .sum-cell {
+            background: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .sum-cell .sc-label {
+            font-size: 10px;
+            color: var(--dim);
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .sum-cell .sc-val {
+            font-size: 16px;
+            font-weight: 800;
+        }
+
+        .sum-cell.hl {
+            background: var(--accent-light);
+        }
+
+        .sum-cell.hl .sc-val {
+            color: var(--accent);
+        }
+
+        /* ===== NOTES ===== */
+        .notes {
+            margin-bottom: 48px;
+            padding-top: 24px;
+            border-top: 1px solid var(--border);
+        }
+
+        .note {
+            font-size: 11px;
+            color: var(--dim);
+            margin-bottom: 4px;
+            padding-left: 12px;
+            position: relative;
+        }
+
+        .note::before {
+            content: '※';
+            position: absolute;
+            left: 0;
+        }
+
+        /* ===== FOOTER ===== */
+        .q-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-top: 24px;
+            border-top: 2px solid var(--text);
+            font-size: 11px;
+            color: var(--dim);
+        }
+
+        .q-footer .f-company {
+            font-weight: 700;
+            color: var(--text);
+            font-size: 13px;
+            margin-bottom: 4px;
+        }
+
+        .q-footer .f-contact {
+            text-align: right;
+            line-height: 1.8;
+        }
+
+        /* ===== PRINT / PDF ===== */
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            body {
+                background: #fff;
+            }
+
+            .toolbar,
+            .btn-add-row,
+            .row-del {
+                display: none !important;
+            }
+
+            .page {
+                box-shadow: none;
+                margin: 0;
+                padding: 40px 50px;
+                max-width: 100%;
+                border-radius: 0;
+            }
+
+            [contenteditable] {
+                background: transparent !important;
+            }
+
+            .num-input,
+            .rate-input,
+            select.sel {
+                border: none !important;
+                background: transparent !important;
+                -webkit-appearance: none;
+            }
+
+            @page {
+                margin: 12mm;
+                size: A4;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOOLBAR (화면 전용, PDF에서 숨김) -->
+    <div class="toolbar">
+        <div class="toolbar-left">
+            <div class="toolbar-title">견적서 편집기</div>
+            <div class="toolbar-hint">텍스트 클릭 → 편집 · 금액 자동 계산</div>
+        </div>
+        <div class="toolbar-actions">
+            <button class="btn btn-outline" onclick="resetAll()">초기화</button>
+            <button class="btn btn-primary" onclick="window.print()">📄 PDF 저장</button>
+        </div>
+    </div>
+
+    <div class="page">
+
+        <!-- HEADER -->
+        <div class="q-header">
+            <div class="q-company">
+                <h1 contenteditable>PlusX</h1>
+                <div class="tagline" contenteditable>CREATIVE PARTNER</div>
+            </div>
+            <div class="q-title">
+                <h2>QUOTATION</h2>
+                <div class="q-date">Date: <span contenteditable>2023. 01. 01</span></div>
+            </div>
+        </div>
+
+        <!-- INFO -->
+        <div class="info-grid">
+            <div class="info-block">
+                <div class="info-block-title">프로젝트 정보</div>
+                <div class="info-row"><span class="info-k">프로젝트명</span><span class="info-v" contenteditable>프로젝트명
+                        구축</span></div>
+                <div class="info-row"><span class="info-k">기간</span><span class="info-v" contenteditable>0개월 (0월 ~
+                        0월)</span></div>
+                <div class="info-row"><span class="info-k">작성일</span><span class="info-v" contenteditable>2023. 01.
+                        01</span></div>
+            </div>
+            <div class="info-block">
+                <div class="info-block-title">수신</div>
+                <div class="info-row"><span class="info-k">회사명</span><span class="info-v" contenteditable>—</span></div>
+                <div class="info-row"><span class="info-k">대표자명</span><span class="info-v" contenteditable>—</span>
+                </div>
+                <div class="info-row"><span class="info-k">주소</span><span class="info-v" contenteditable>—</span></div>
+            </div>
+        </div>
+
+        <!-- TOTAL -->
+        <div class="total-box">
+            <div>
+                <div class="t-label">총 견적 비용</div>
+                <div class="t-amount" id="grandTotal">₩362,250,000</div>
+                <div class="t-note">십만원 이하 절삭, VAT 별도</div>
+            </div>
+            <div class="t-badge" id="grandTrunc">₩362,000,000 (절삭)</div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="sec-label">직접인건비 내역</div>
+        <div class="tbl-wrap">
+            <table id="tbl">
+                <thead>
+                    <tr>
+                        <th style="width:20%">항목</th>
+                        <th style="width:14%">역할</th>
+                        <th style="width:10%">등급</th>
+                        <th class="r" style="width:16%">노임단가 (월)</th>
+                        <th class="r" style="width:8%">기간</th>
+                        <th class="r" style="width:18%">인건비</th>
+                        <th style="width:4%"></th>
+                    </tr>
+                </thead>
+                <tbody id="tbody"></tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="4" class="r">합계</td>
+                        <td class="r" id="sumM">18.0</td>
+                        <td class="r calc" id="sumL">₩150,000,000</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <button class="btn-add-row" onclick="addRow()">+ 인력 추가</button>
+
+        <!-- TASK -->
+        <div class="task-box">
+            <div class="task-label">주요 업무 내역</div>
+            <div class="task-content" contenteditable>디자인 트렌드 리서치 / 브랜드 아이덴티티 분석 / UI 디자인키워드 도출 / 그래픽 모티브 도출 / 디자인 요소 정의
+                / 디자인 시안 2종 / 전체 페이지 디자인 / 개발 팔로업 / 디자인 QA 진행</div>
+        </div>
+
+        <!-- COST -->
+        <div class="sec-label">비용 산출</div>
+        <div class="cost-row">
+            <div class="cost-item">
+                <div class="c-label">직접인건비</div>
+                <div class="c-formula">인력비용 합계</div>
+                <div class="c-val" id="cLabor">₩150,000,000</div>
+            </div>
+            <div class="cost-item">
+                <div class="c-label">제경비</div>
+                <div class="c-formula">인건비 × <input type="text" class="rate-input" id="rOH" value="110"
+                        oninput="calc()">%</div>
+                <div class="c-val" id="cOH">₩165,000,000</div>
+            </div>
+            <div class="cost-item">
+                <div class="c-label">기술료</div>
+                <div class="c-formula">(인건비+제경비) × <input type="text" class="rate-input" id="rTech" value="15"
+                        oninput="calc()">%</div>
+                <div class="c-val" id="cTech">₩47,250,000</div>
+            </div>
+        </div>
+
+        <!-- SUMMARY -->
+        <div class="sec-label">최종 합계</div>
+        <div class="summary-grid">
+            <div class="sum-cell">
+                <div class="sc-label">직접인건비</div>
+                <div class="sc-val" id="s1">₩150,000,000</div>
+            </div>
+            <div class="sum-cell">
+                <div class="sc-label">제경비</div>
+                <div class="sc-val" id="s2">₩165,000,000</div>
+            </div>
+            <div class="sum-cell">
+                <div class="sc-label">기술료</div>
+                <div class="sc-val" id="s3">₩47,250,000</div>
+            </div>
+            <div class="sum-cell hl">
+                <div class="sc-label">총 합계</div>
+                <div class="sc-val" id="s4">₩362,250,000</div>
+            </div>
+        </div>
+
+        <!-- NOTES -->
+        <div class="notes">
+            <div class="note" contenteditable>협의된 프로젝트 범위와 일정 외의 작업이 추가되는 경우 추가 비용이 발생합니다.</div>
+            <div class="note" contenteditable>폰트, 이미지, 영상, 일러스트 등 외부 소스 구매 시 추가 라이센스 비용이 발생합니다.</div>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="q-footer">
+            <div>
+                <div class="f-company" contenteditable>PlusX Creative Partner</div>
+                <div contenteditable>© 2023 PlusX. All Rights Reserved.</div>
+            </div>
+            <div class="f-contact" contenteditable>
+                WWW.PLUS-EX.COM<br>
+                TEL. 02-518-7717 | FAX. 02-518-7714
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const INIT = [
+            { t: 'Creative Director', r: 'CD / PM', g: '특급기술자', rate: 15000000, m: 5 },
+            { t: 'UI Designer', r: 'UI Designer', g: '고급기술자', rate: 7000000, m: 1 },
+            { t: 'UI Designer', r: 'UI Designer', g: '중급기술자', rate: 6000000, m: 8 },
+            { t: 'UI Designer', r: 'UI Designer', g: '초급기술자', rate: 5000000, m: 4 },
+            { t: 'Motion Designer', r: 'Motion Designer', g: '초급기술자', rate: 5000000, m: 0 },
+        ];
+
+        const GRADES = ['특급기술자', '고급기술자', '중급기술자', '초급기술자'];
+        const GC = { '특급기술자': 'g-top', '고급기술자': 'g-high', '중급기술자': 'g-mid', '초급기술자': 'g-low' };
+
+        const fmt = n => '₩' + n.toLocaleString('ko-KR');
+        const pn = s => parseInt(String(s).replace(/[^0-9]/g, '')) || 0;
+
+        function mkRow(d) {
+            const tr = document.createElement('tr');
+            const opts = GRADES.map(g => `<option value="${g}" ${g === d.g ? 'selected' : ''}>${g}</option>`).join('');
+            tr.innerHTML = `
+                <td class="bold" contenteditable>${d.t}</td>
+                <td contenteditable>${d.r}</td>
+                <td><select class="sel" onchange="calc()">${opts}</select></td>
+                <td class="r"><input class="num-input" value="${fmt(d.rate)}" oninput="calc()" onfocus="this.select()"></td>
+                <td class="r"><input class="num-input" value="${d.m}" style="width:50px" oninput="calc()" onfocus="this.select()"></td>
+                <td class="r bold calc rc">${fmt(d.rate * d.m)}</td>
+                <td><button class="row-del" onclick="this.closest('tr').remove();calc()">✕</button></td>`;
+            return tr;
+        }
+
+        function render(data) {
+            const tb = document.getElementById('tbody');
+            tb.innerHTML = '';
+            data.forEach(d => tb.appendChild(mkRow(d)));
+            calc();
+        }
+
+        function addRow() {
+            document.getElementById('tbody').appendChild(mkRow({ t: '직책명', r: '역할', g: '초급기술자', rate: 5000000, m: 0 }));
+            calc();
+        }
+
+        function calc() {
+            let tL = 0, tM = 0;
+            document.querySelectorAll('#tbody tr').forEach(row => {
+                const inp = row.querySelectorAll('.num-input');
+                const rate = pn(inp[0].value);
+                const months = parseFloat(inp[1].value) || 0;
+                const cost = rate * months;
+                row.querySelector('.rc').textContent = fmt(cost);
+                tL += cost; tM += months;
+                inp[0].onblur = function () { this.value = fmt(rate); };
+            });
+
+            const oh = Math.round(tL * (parseFloat(document.getElementById('rOH').value) || 0) / 100);
+            const tech = Math.round((tL + oh) * (parseFloat(document.getElementById('rTech').value) || 0) / 100);
+            const total = tL + oh + tech;
+            const trunc = Math.floor(total / 100000) * 100000;
+
+            document.getElementById('sumM').textContent = tM.toFixed(1);
+            document.getElementById('sumL').textContent = fmt(tL);
+            document.getElementById('cLabor').textContent = fmt(tL);
+            document.getElementById('cOH').textContent = fmt(oh);
+            document.getElementById('cTech').textContent = fmt(tech);
+            document.getElementById('s1').textContent = fmt(tL);
+            document.getElementById('s2').textContent = fmt(oh);
+            document.getElementById('s3').textContent = fmt(tech);
+            document.getElementById('s4').textContent = fmt(total);
+            document.getElementById('grandTotal').textContent = fmt(total);
+            document.getElementById('grandTrunc').textContent = fmt(trunc) + ' (절삭)';
+        }
+
+        function resetAll() { if (confirm('초기화하시겠습니까?')) { render(INIT); document.getElementById('rOH').value = '110'; document.getElementById('rTech').value = '15'; } }
+
+        render(INIT);
+    </script>
+</body>
+
+</html>

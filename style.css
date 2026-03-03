@@ -144,6 +144,27 @@ body {
     color: #fff;
 }
 
+.btn-delete-selected {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 6px 14px;
+    font-size: 8px;
+    font-weight: 500;
+    font-family: var(--font-main);
+    background: #fff;
+    color: #c00;
+    border: 1px solid #e0c0c0;
+    border-radius: 0;
+    cursor: pointer;
+    transition: all var(--transition);
+}
+
+.btn-delete-selected:hover {
+    background: #c00;
+    color: #fff;
+}
+
 .btn-delete-row {
     display: inline-flex;
     align-items: center;

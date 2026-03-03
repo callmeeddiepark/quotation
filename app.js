@@ -12,40 +12,40 @@
             role: 'Creative Director',
             position: 'CD / PM',
             grade: '특급기술자',
-            rate: 15000000,
-            months: 5.0,
-            desc: '크리에이티브 디렉팅 / 프로젝트 매니징'
+            rate: 0,
+            months: 0,
+            desc: ''
         },
         {
             role: 'UI Designer',
             position: 'UI Designer',
             grade: '고급기술자',
-            rate: 7000000,
-            months: 1.0,
-            desc: '디자인 트렌드 리서치 / 브랜드 아이덴티티 분석 / UI 디자인 키워드 도출 / 그래픽 모티브 도출 / 디자인 요소 정의 / 디자인 시안 2종 / 전체 페이지 디자인 / 개발 팔로업 / 디자인 QA 진행'
+            rate: 0,
+            months: 0,
+            desc: ''
         },
         {
             role: 'UI Designer',
             position: 'UI Designer',
             grade: '중급기술자',
-            rate: 6000000,
-            months: 8.0,
+            rate: 0,
+            months: 0,
             desc: ''
         },
         {
             role: 'UI Designer',
             position: 'UI Designer',
             grade: '초급기술자',
-            rate: 5000000,
-            months: 4.0,
+            rate: 0,
+            months: 0,
             desc: ''
         },
         {
             role: 'Motion Designer',
             position: 'Motion Designer',
             grade: '초급기술자',
-            rate: 5000000,
-            months: 0.0,
+            rate: 0,
+            months: 0,
             desc: ''
         }
     ];
@@ -110,6 +110,7 @@
         const subtotal = data.rate * data.months;
 
         tr.innerHTML = `
+      <td class="no-print text-center"><input type="checkbox" class="row-check" data-index="${index}" style="cursor:pointer" /></td>
       <td class="text-center" style="color:var(--text-muted); font-size:12px;">${index + 1}</td>
       <td>
         <span class="cell-editable" contenteditable="true" data-col="role">${data.role}</span>
@@ -153,8 +154,8 @@
             role: '직무',
             position: '역할',
             grade: '등급',
-            rate: 5000000,
-            months: 1.0,
+            rate: 0,
+            months: 0,
             desc: ''
         });
         renderTable();
@@ -301,6 +302,48 @@
 
     // Add row button
     $('#btnAddRow').addEventListener('click', addRow);
+
+    // Check-all checkbox
+    $('#checkAll').addEventListener('change', (e) => {
+        const checked = e.target.checked;
+        $$('.row-check').forEach(cb => cb.checked = checked);
+        updateDeleteSelectedBtn();
+    });
+
+    // Individual checkbox change
+    personnelBody.addEventListener('change', (e) => {
+        if (e.target.classList.contains('row-check')) {
+            updateDeleteSelectedBtn();
+            // Update check-all state
+            const allChecks = $$('.row-check');
+            const allChecked = [...allChecks].every(cb => cb.checked);
+            $('#checkAll').checked = allChecked;
+        }
+    });
+
+    // Delete selected button
+    function updateDeleteSelectedBtn() {
+        const checkedCount = $$('.row-check:checked').length;
+        const btn = $('#btnDeleteSelected');
+        btn.style.display = checkedCount > 0 ? 'inline-flex' : 'none';
+        btn.textContent = '';
+        btn.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg> 선택 삭제 (${checkedCount})`;
+    }
+
+    $('#btnDeleteSelected').addEventListener('click', () => {
+        const checkedIndexes = [...$$('.row-check:checked')].map(cb => parseInt(cb.dataset.index));
+        if (checkedIndexes.length === 0) return;
+        if (personnelData.length - checkedIndexes.length < 1) {
+            showToast('최소 1개의 인력 항목이 필요합니다');
+            return;
+        }
+        personnelData = personnelData.filter((_, i) => !checkedIndexes.includes(i));
+        $('#checkAll').checked = false;
+        renderTable();
+        saveData();
+        updateDeleteSelectedBtn();
+        showToast(`${checkedIndexes.length}개 항목이 삭제되었습니다`);
+    });
 
     // Rate inputs (overhead, tech)
     overheadRateEl.addEventListener('input', () => { recalculate(); saveData(); });
